@@ -46,7 +46,10 @@ class TelegramStars(PaymentGateway):
         logger.info("TelegramStars payment gateway initialized.")
 
     async def create_payment(self, data: SubscriptionData) -> str:
-        amount = int(data.price)
+        plan = self.services.plan.get_plan(data.devices)
+        price = plan.get_price(currency=self.currency, duration=data.duration)
+        data.price = price
+        amount = max(1, int(round(float(price))))
 
         prices = [LabeledPrice(label=self.currency.code, amount=amount)]
         devices = format_device_count(data.devices)
