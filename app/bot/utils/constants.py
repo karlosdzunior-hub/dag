@@ -1,13 +1,13 @@
 # region: Download
-APP_IOS_LINK = "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973"
-APP_ANDROID_LINK = "https://play.google.com/store/apps/details?id=com.happproxy"
+APP_IOS_LINK = "https://apps.apple.com/app/v2raytun/id6476628951"
+APP_ANDROID_LINK = "https://play.google.com/store/apps/details?id=com.v2raytun.android"
 APP_WINDOWS_LINK = (
-    "https://github.com/Happ-proxy/happ-desktop/releases/latest/download/setup-Happ.x86.exe"
+    "https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-windows-64-SelfContained.zip"
 )
 
-APP_IOS_SCHEME = "happ://add/"
-APP_ANDROID_SCHEME = "happ://add/"
-APP_WINDOWS_SCHEME = "happ://add/"
+APP_IOS_SCHEME = "v2raytun://import/"
+APP_ANDROID_SCHEME = "v2raytun://import/"
+APP_WINDOWS_SCHEME = "v2rayn://install-sub/"
 
 # endregion
 
