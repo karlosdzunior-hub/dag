@@ -4,7 +4,6 @@ version = "1.0.0"
 description = "This is a Telegram bot for selling VPN subscriptions. It works with 3X-UI."
 authors = ["snoups"]
 readme = "README.md"
-package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -19,6 +18,7 @@ aiosqlite = "^0.20.0"
 alembic = "^1.14.0"
 redis = "^5.2.1"
 apscheduler = "^3.11.0"
+fakeredis = "^2.35.1"
 
 [build-system]
 requires = ["poetry-core"]
