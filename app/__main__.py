@@ -45,10 +45,14 @@ async def on_startup(
     redis: Redis,
     i18n: I18n,
 ) -> None:
+    import os
     webhook_url = urljoin(config.bot.DOMAIN, TELEGRAM_WEBHOOK)
 
-    if await bot.get_webhook_info() != webhook_url:
-        await bot.set_webhook(webhook_url)
+    if os.environ.get("BOT_DOMAIN"):
+        if await bot.get_webhook_info() != webhook_url:
+            await bot.set_webhook(webhook_url)
+    else:
+        logging.warning("BOT_DOMAIN is not set; skipping set_webhook to avoid overriding production webhook.")
 
     current_webhook = await bot.get_webhook_info()
     logging.info(f"Current webhook URL: {current_webhook.url}")
