@@ -35,6 +35,9 @@ DEFAULT_SHOP_REFERRER_LEVEL_TWO_PERIOD = 1
 DEFAULT_SHOP_REFERRER_LEVEL_ONE_RATE = 50
 DEFAULT_SHOP_REFERRER_LEVEL_TWO_RATE = 5
 DEFAULT_SHOP_BONUS_DEVICES_COUNT = 1
+DEFAULT_SHOP_PAID_TRAFFIC_LIMIT_GB = 129
+DEFAULT_SHOP_PAID_TRAFFIC_RESET_DAYS = 30
+DEFAULT_SHOP_TRIAL_TRAFFIC_LIMIT_GB = 10
 DEFAULT_SHOP_PAYMENT_STARS_ENABLED = True
 DEFAULT_SHOP_PAYMENT_CRYPTOMUS_ENABLED = False
 DEFAULT_SHOP_PAYMENT_HELEKET_ENABLED = False
@@ -85,6 +88,9 @@ class ShopConfig:
     REFERRER_LEVEL_ONE_RATE: int
     REFERRER_LEVEL_TWO_RATE: int
     BONUS_DEVICES_COUNT: int
+    PAID_TRAFFIC_LIMIT_GB: int
+    PAID_TRAFFIC_RESET_DAYS: int
+    TRIAL_TRAFFIC_LIMIT_GB: int
     PAYMENT_STARS_ENABLED: bool
     PAYMENT_CRYPTOMUS_ENABLED: bool
     PAYMENT_HELEKET_ENABLED: bool
@@ -330,6 +336,21 @@ def load_config() -> Config:
             ),
             BONUS_DEVICES_COUNT=env.int(
                 "SHOP_BONUS_DEVICES_COUNT", default=DEFAULT_SHOP_BONUS_DEVICES_COUNT
+            ),
+            PAID_TRAFFIC_LIMIT_GB=env.int(
+                "SHOP_PAID_TRAFFIC_LIMIT_GB",
+                default=DEFAULT_SHOP_PAID_TRAFFIC_LIMIT_GB,
+                validate=Range(min=0, error="SHOP_PAID_TRAFFIC_LIMIT_GB must be >= 0"),
+            ),
+            PAID_TRAFFIC_RESET_DAYS=env.int(
+                "SHOP_PAID_TRAFFIC_RESET_DAYS",
+                default=DEFAULT_SHOP_PAID_TRAFFIC_RESET_DAYS,
+                validate=Range(min=0, error="SHOP_PAID_TRAFFIC_RESET_DAYS must be >= 0"),
+            ),
+            TRIAL_TRAFFIC_LIMIT_GB=env.int(
+                "SHOP_TRIAL_TRAFFIC_LIMIT_GB",
+                default=DEFAULT_SHOP_TRIAL_TRAFFIC_LIMIT_GB,
+                validate=Range(min=0, error="SHOP_TRIAL_TRAFFIC_LIMIT_GB must be >= 0"),
             ),
             PAYMENT_STARS_ENABLED=payment_stars_enabled,
             PAYMENT_CRYPTOMUS_ENABLED=payment_cryptomus_enabled,
