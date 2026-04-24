@@ -140,15 +140,21 @@ class VPNService:
         enable: bool = True,
         flow: str = "xtls-rprx-vision",
         total_gb: int = 0,
+        reset: int = 0,
         inbound_id: int = 1,
     ) -> bool:
-        logger.info(f"Creating new client {user.tg_id} | {devices} devices {duration} days.")
+        logger.info(
+            f"Creating new client {user.tg_id} | {devices} devices {duration} days "
+            f"| {total_gb} GB / reset every {reset} days."
+        )
 
         await self.server_pool_service.assign_server_to_user(user)
         connection = await self.server_pool_service.get_connection(user)
 
         if not connection:
             return False
+
+        total_bytes = total_gb * 1024 ** 3 if total_gb and total_gb > 0 else 0
 
         new_client = Client(
             email=str(user.tg_id),
@@ -158,7 +164,8 @@ class VPNService:
             flow=flow,
             limit_ip=devices,
             sub_id=user.vpn_id,
-            total_gb=total_gb,
+            total_gb=total_bytes,
+            reset=reset,
         )
         inbound_id = await self.server_pool_service.get_inbound_id(connection.api)
 
@@ -179,9 +186,13 @@ class VPNService:
         replace_duration: bool = False,
         enable: bool = True,
         flow: str = "xtls-rprx-vision",
-        total_gb: int = 0,
+        total_gb: int | None = None,
+        reset: int | None = None,
     ) -> bool:
-        logger.info(f"Updating client {user.tg_id} | {devices} devices {duration} days.")
+        logger.info(
+            f"Updating client {user.tg_id} | {devices} devices {duration} days "
+            f"| total_gb={total_gb} reset={reset}."
+        )
         connection = await self.server_pool_service.get_connection(user)
 
         if not connection:
@@ -213,7 +224,11 @@ class VPNService:
             client.flow = flow
             client.limit_ip = devices
             client.sub_id = user.vpn_id
-            client.total_gb = total_gb
+
+            if total_gb is not None:
+                client.total_gb = total_gb * 1024 ** 3 if total_gb > 0 else 0
+            if reset is not None:
+                client.reset = reset
 
             await connection.api.client.update(client_uuid=client.id, client=client)
             logger.info(f"Client {user.tg_id} updated successfully.")
@@ -224,7 +239,13 @@ class VPNService:
 
     async def create_subscription(self, user: User, devices: int, duration: int) -> bool:
         if not await self.is_client_exists(user):
-            return await self.create_client(user=user, devices=devices, duration=duration)
+            return await self.create_client(
+                user=user,
+                devices=devices,
+                duration=duration,
+                total_gb=self.config.shop.PAID_TRAFFIC_LIMIT_GB,
+                reset=self.config.shop.PAID_TRAFFIC_RESET_DAYS,
+            )
         return False
 
     async def extend_subscription(self, user: User, devices: int, duration: int) -> bool:
@@ -233,6 +254,8 @@ class VPNService:
             devices=devices,
             duration=duration,
             replace_devices=True,
+            total_gb=self.config.shop.PAID_TRAFFIC_LIMIT_GB,
+            reset=self.config.shop.PAID_TRAFFIC_RESET_DAYS,
         )
 
     async def change_subscription(self, user: User, devices: int, duration: int) -> bool:
@@ -243,17 +266,27 @@ class VPNService:
                 duration,
                 replace_devices=True,
                 replace_duration=True,
+                total_gb=self.config.shop.PAID_TRAFFIC_LIMIT_GB,
+                reset=self.config.shop.PAID_TRAFFIC_RESET_DAYS,
             )
         return False
 
     async def process_bonus_days(self, user: User, duration: int, devices: int) -> bool:
         if await self.is_client_exists(user):
+            # Preserve existing traffic limits/reset for paying users who get bonus days.
             updated = await self.update_client(user=user, devices=0, duration=duration)
             if updated:
                 logger.info(f"Updated client {user.tg_id} with additional {duration} days(-s).")
                 return True
         else:
-            created = await self.create_client(user=user, devices=devices, duration=duration)
+            # Brand-new client created via bonus days (trial / referral) — apply trial traffic cap.
+            created = await self.create_client(
+                user=user,
+                devices=devices,
+                duration=duration,
+                total_gb=self.config.shop.TRIAL_TRAFFIC_LIMIT_GB,
+                reset=0,
+            )
             if created:
                 logger.info(f"Created client {user.tg_id} with additional {duration} days(-s)")
                 return True
