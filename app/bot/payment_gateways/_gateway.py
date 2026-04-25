@@ -68,6 +68,20 @@ class PaymentGateway(ABC):
 
         async with self.session() as session:
             transaction = await Transaction.get_by_id(session=session, payment_id=payment_id)
+
+            if transaction is None:
+                logger.warning(
+                    f"Payment-succeeded notification for unknown payment_id={payment_id} "
+                    "(test ping or unknown transaction). Ignoring."
+                )
+                return
+
+            if transaction.status == TransactionStatus.COMPLETED:
+                logger.info(
+                    f"Transaction {payment_id} already completed; ignoring duplicate notification."
+                )
+                return
+
             data = SubscriptionData.unpack(transaction.subscription)
             logger.debug(f"Subscription data unpacked: {data}")
             user = await User.get(session=session, tg_id=data.user_id)
@@ -145,6 +159,13 @@ class PaymentGateway(ABC):
         logger.info(f"Payment canceled {payment_id}")
         async with self.session() as session:
             transaction = await Transaction.get_by_id(session=session, payment_id=payment_id)
+
+            if transaction is None:
+                logger.warning(
+                    f"Payment-canceled notification for unknown payment_id={payment_id}. Ignoring."
+                )
+                return
+
             data = SubscriptionData.unpack(transaction.subscription)
 
             await Transaction.update(
