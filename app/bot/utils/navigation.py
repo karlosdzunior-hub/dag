@@ -31,6 +31,14 @@ class NavDownload(str, Enum):
     PLATFORM_ANDROID = f"{PLATFORM}_android"
     PLATFORM_WINDOWS = f"{PLATFORM}_windows"
 
+    APP = "app"
+    APP_IOS_V2 = f"{APP}_ios_v2"
+    APP_IOS_HAPP = f"{APP}_ios_happ"
+    APP_ANDROID_V2 = f"{APP}_android_v2"
+    APP_ANDROID_HAPP = f"{APP}_android_happ"
+    APP_WINDOWS_V2 = f"{APP}_windows_v2"
+    APP_WINDOWS_HAPP = f"{APP}_windows_happ"
+
 
 class NavSubscription(str, Enum):
     MAIN = "subscription"

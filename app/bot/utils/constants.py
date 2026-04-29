@@ -9,6 +9,12 @@ APP_IOS_SCHEME = "v2raytun://import/"
 APP_ANDROID_SCHEME = "v2raytun://import/"
 APP_WINDOWS_SCHEME = "v2rayn://install-sub/"
 
+APP_HAPP_IOS_LINK = "https://apps.apple.com/app/happ-proxy-utility/id6504287215"
+APP_HAPP_ANDROID_LINK = "https://play.google.com/store/apps/details?id=com.happproxy"
+APP_HAPP_WINDOWS_LINK = "https://github.com/Happ-proxy/happ-desktop/releases/latest"
+
+APP_HAPP_SCHEME = "happ://add/"
+
 # endregion
 
 # region: Keys

@@ -712,6 +712,18 @@ msgstr "📥 Download"
 msgid "download:button:connect"
 msgstr "🔌 Connect"
 
+msgid "download:message:choose_app"
+msgstr "📲 <b>{platform} — choose your app:</b>"
+
+msgid "download:button:app_v2raytun"
+msgstr "🟢 V2RayTun"
+
+msgid "download:button:app_v2rayn"
+msgstr "🟢 V2RayN"
+
+msgid "download:button:app_happ"
+msgstr "🟣 Happ"
+
 #: app/bot/routers/main_menu/handler.py:103
 #: app/bot/routers/main_menu/handler.py:127
 #: app/bot/routers/main_menu/handler.py:158
