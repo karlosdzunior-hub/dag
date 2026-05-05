@@ -13,6 +13,7 @@ from app.bot.utils.constants import (
     ReferrerRewardLevel,
     ReferrerRewardType,
 )
+
 from app.bot.utils.formatting import format_subscription_period
 from app.bot.utils.navigation import NavMain, NavReferral
 from app.config import Config
@@ -51,48 +52,38 @@ async def generate_referral_summary_text(
 
     if referrer_reward_enabled:
         reward_type = ReferrerRewardType.from_str(config.shop.REFERRER_REWARD_TYPE)
-        first_level_rewards_sum = await ReferrerReward.get_rewards_sum(
+        total_rewards_sum = await ReferrerReward.get_rewards_sum(
             session=session,
             tg_id=user.tg_id,
             reward_type=reward_type,
             reward_level=ReferrerRewardLevel.FIRST_LEVEL,
-        )
-        second_level_rewards_sum = await ReferrerReward.get_rewards_sum(
-            session=session,
-            tg_id=user.tg_id,
-            reward_type=reward_type,
-            reward_level=ReferrerRewardLevel.SECOND_LEVEL,
         )
 
         if reward_type == ReferrerRewardType.DAYS:
             first_referrer_duration = format_subscription_period(
                 config.shop.REFERRER_LEVEL_ONE_PERIOD
             )
-            second_referrer_duration = format_subscription_period(
-                config.shop.REFERRER_LEVEL_TWO_PERIOD
-            )
-            text += _("referral:message:user_summary_explain_referrer_days").format(
+            text += _("referral:message:user_summary_explain_referrer_days_single").format(
                 first_referrer_duration=first_referrer_duration,
-                second_referrer_duration=second_referrer_duration,
             )
-            first_level_rewards_sum = format_subscription_period(int(first_level_rewards_sum))
-            second_level_rewards_sum = format_subscription_period(int(second_level_rewards_sum))
+            total_rewards_sum = format_subscription_period(int(total_rewards_sum))
         elif reward_type == ReferrerRewardType.MONEY:
             first_referrer_rate = config.shop.REFERRER_LEVEL_ONE_RATE
-            second_referrer_rate = config.shop.REFERRER_LEVEL_TWO_RATE
-            text += _("referral:message:user_summary_explain_referrer_money").format(
+            text += _("referral:message:user_summary_explain_referrer_money_single").format(
                 first_referrer_rate=first_referrer_rate,
-                second_referrer_rate=second_referrer_rate,
             )
-
-            # TODO: handle and format money currencies
+            currency = config.shop.CURRENCY
+            total_rewards_sum = f"{total_rewards_sum:.2f} {currency}"
+            text += _("referral:message:user_balance").format(
+                balance=f"{user.balance:.2f}",
+                currency=currency,
+            )
 
         pending_rewards_count = await ReferrerReward.get_pending_rewards_count(
             session=session, user_tg_id=user.tg_id
         )
-        text += _("referral:message:user_summary_referrer_rewards").format(
-            first_level_rewards_sum=first_level_rewards_sum,
-            second_level_rewards_sum=second_level_rewards_sum,
+        text += _("referral:message:user_summary_referrer_rewards_single").format(
+            total_rewards_sum=total_rewards_sum,
             pending_rewards_count=pending_rewards_count,
         )
 
