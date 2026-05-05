@@ -32,7 +32,7 @@ DEFAULT_SHOP_REFERRER_REWARD_ENABLED = True
 DEFAULT_SHOP_REFERRER_REWARD_TYPE = ReferrerRewardType.DAYS.value
 DEFAULT_SHOP_REFERRER_LEVEL_ONE_PERIOD = 3
 DEFAULT_SHOP_REFERRER_LEVEL_TWO_PERIOD = 1
-DEFAULT_SHOP_REFERRER_LEVEL_ONE_RATE = 50
+DEFAULT_SHOP_REFERRER_LEVEL_ONE_RATE = 30
 DEFAULT_SHOP_REFERRER_LEVEL_TWO_RATE = 5
 DEFAULT_SHOP_BONUS_DEVICES_COUNT = 1
 DEFAULT_SHOP_PAYMENT_STARS_ENABLED = True
@@ -262,11 +262,6 @@ def load_config() -> Config:
     referrer_reward_enabled = env.bool(
         "SHOP_REFERRER_REWARD_ENABLED", default=DEFAULT_SHOP_REFERRER_REWARD_ENABLED
     )
-    if referrer_reward_type != ReferrerRewardType.DAYS.value:
-        logger.error(
-            "Only 'days' option is now available for SHOP_REFERRER_REWARD_TYPE. Referrer reward disabled."
-        )
-        referrer_reward_enabled = False
 
     return Config(
         bot=BotConfig(
