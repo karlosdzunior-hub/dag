@@ -671,6 +671,10 @@ msgstr "Under development!"
 msgid "download:message:choose_platform"
 msgstr "📲 <b>Choose your platform:</b>"
 
+#: app/bot/routers/download/handler.py
+msgid "download:message:choose_app"
+msgstr "📱 <b>{platform} — choose your app:</b>"
+
 #: app/bot/routers/download/handler.py:92
 msgid "download:message:platform_ios"
 msgstr "🍏 IOS"
