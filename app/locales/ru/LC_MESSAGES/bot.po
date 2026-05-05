@@ -678,6 +678,10 @@ msgstr "В разработке!"
 msgid "download:message:choose_platform"
 msgstr "📲 <b>Выберите вашу платформу:</b>"
 
+#: app/bot/routers/download/handler.py
+msgid "download:message:choose_app"
+msgstr "📱 <b>{platform} — выберите приложение:</b>"
+
 #: app/bot/routers/download/handler.py:92
 msgid "download:message:platform_ios"
 msgstr "🍏 IOS"
