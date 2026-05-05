@@ -73,6 +73,31 @@ msgstr "ЮKassa"
 msgid "payment:gateway:yoomoney"
 msgstr "ЮMoney"
 
+#: app/bot/routers/subscription/keyboard.py
+msgid "payment:gateway:balance_sufficient"
+msgstr "Баланс (хватает) |"
+
+#: app/bot/routers/subscription/keyboard.py
+msgid "payment:gateway:balance_insufficient"
+msgstr "Баланс (не хватает) |"
+
+#: app/bot/routers/subscription/payment_handler.py
+msgid "payment:button:balance_confirm"
+msgstr "✅ Оплатить с баланса"
+
+#: app/bot/routers/subscription/payment_handler.py
+msgid "payment:message:balance_confirm"
+msgstr ""
+"💰 <b>Оплата с реферального баланса</b>\n"
+"\n"
+"Стоимость: <b>{price} {currency}</b>\n"
+"Ваш баланс: <b>{balance} {currency}</b>\n"
+"Остаток после оплаты: <b>{balance_after} {currency}</b>\n"
+
+#: app/bot/routers/subscription/payment_handler.py
+msgid "payment:popup:insufficient_balance"
+msgstr "❌ Недостаточно средств. Ваш баланс: {balance} {currency}"
+
 #: app/bot/routers/admin_tools/admin_tools_handler.py:23
 msgid "admin_tools:message:main"
 msgstr "🛠 <b>Административные инструменты:</b>"
@@ -888,6 +913,14 @@ msgstr ""
 "2️⃣ Вы также получаете <b>+{second_referrer_duration}</b> от "
 "пользователей, приглашенных вашими рефералами!\n"
 
+#: app/bot/routers/referral/handler.py:74
+msgid "referral:message:user_summary_explain_referrer_days_single"
+msgstr ""
+"\n"
+"💸 <b>Реферальная система</b>\n"
+"👥 <b>За каждую успешную оплату</b> подписки по вашей ссылке:\n"
+"Вы получаете <b>+{first_referrer_duration}</b> к своей подписке\n"
+
 #: app/bot/routers/referral/handler.py:83
 msgid "referral:message:user_summary_explain_referrer_money"
 msgstr ""
@@ -899,6 +932,15 @@ msgstr ""
 "2️⃣ Также вы получаете <b>{second_referrer_rate}%</b> платежей от "
 "пользователей, приглашенных вашими рефералами!\n"
 
+#: app/bot/routers/referral/handler.py:83
+msgid "referral:message:user_summary_explain_referrer_money_single"
+msgstr ""
+"\n"
+"💸 <b>Реферальная система</b>\n"
+"👥 <b>За каждую успешную оплату</b> подписки по вашей ссылке:\n"
+"Вы получаете на баланс <b>{first_referrer_rate}%</b> от суммы платежа\n"
+"💳 Баланс можно использовать для оплаты подписки\n"
+
 #: app/bot/routers/referral/handler.py:93
 msgid "referral:message:user_summary_referrer_rewards"
 msgstr ""
@@ -908,6 +950,20 @@ msgstr ""
 "Второй уровень рефералов: {second_level_rewards_sum}\n"
 "<i>*(Награды начисляются в течение 15 минут. Ожидают: "
 "{pending_rewards_count})</i>"
+
+#: app/bot/routers/referral/handler.py:93
+msgid "referral:message:user_summary_referrer_rewards_single"
+msgstr ""
+"\n"
+"📊 <b>Всего заработано: {total_rewards_sum}</b>\n"
+"<i>*(Награды начисляются в течение 15 минут. Ожидают: "
+"{pending_rewards_count})</i>"
+
+#: app/bot/routers/referral/handler.py:93
+msgid "referral:message:user_balance"
+msgstr ""
+"\n"
+"💰 <b>Ваш баланс: {balance} {currency}</b>\n"
 
 #: app/bot/routers/referral/handler.py:142
 msgid "referral:popup:no_available_servers"
