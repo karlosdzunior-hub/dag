@@ -161,6 +161,9 @@ async def main() -> None:
         admins_ids=config.bot.ADMINS,
     )
 
+    # Pass VPN service to aiohttp app for aggregated subscription handler
+    app["vpn_service"] = services_container.vpn
+
     # Include bot routers
     routers.include(app=app, dispatcher=dispatcher)
 

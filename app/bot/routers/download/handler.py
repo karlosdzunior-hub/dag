@@ -1,3 +1,4 @@
+import base64 as _base64
 import logging
 
 from aiogram import F, Router
@@ -13,6 +14,7 @@ from app.bot.utils.constants import (
     APP_WINDOWS_SCHEME,
     MAIN_MESSAGE_ID_KEY,
     PREVIOUS_CALLBACK_KEY,
+    SUB_WEBHOOK,
 )
 from app.bot.utils.navigation import NavDownload, NavMain
 from app.bot.utils.network import parse_redirect_url
@@ -47,6 +49,27 @@ async def redirect_to_connection(request: Request) -> Response:
         raise HTTPFound(redirect_url)
 
     return Response(status=400, reason="Unsupported application.")
+
+
+async def subscription_handler(request: Request) -> Response:
+    vpn_id = request.match_info.get("vpn_id", "")
+    if not vpn_id:
+        return Response(status=400, reason="Missing vpn_id.")
+
+    vpn_service = request.app.get("vpn_service")
+    if not vpn_service:
+        return Response(status=503, reason="VPN service unavailable.")
+
+    content = await vpn_service.get_combined_subscription(vpn_id)
+    if not content:
+        return Response(status=404, reason="No subscription data found.")
+
+    title = _base64.b64encode("DagVPN".encode()).decode()
+    return Response(
+        body=content,
+        content_type="text/plain; charset=utf-8",
+        headers={"profile-title": title},
+    )
 
 
 @router.callback_query(F.data == NavDownload.MAIN)
@@ -85,7 +108,11 @@ async def callback_platform(
     config: Config,
 ) -> None:
     logger.info(f"User {user.tg_id} selected platform: {callback.data}")
-    key = await services.vpn.get_key(user)
+
+    if user.vpn_id:
+        key = f"{config.bot.DOMAIN}{SUB_WEBHOOK}/{user.vpn_id}"
+    else:
+        key = None
 
     match callback.data:
         case NavDownload.PLATFORM_IOS:

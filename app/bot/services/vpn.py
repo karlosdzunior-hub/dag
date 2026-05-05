@@ -132,6 +132,45 @@ class VPNService:
         logger.debug(f"Fetched key for {user.tg_id}: {key}.")
         return key
 
+    async def get_combined_subscription(self, vpn_id: str) -> bytes | None:
+        import base64
+        import aiohttp as _aiohttp
+
+        connections = self.server_pool_service.get_all_connections()
+        all_configs: list[str] = []
+
+        async with _aiohttp.ClientSession(
+            connector=_aiohttp.TCPConnector(ssl=False)
+        ) as session:
+            for connection in connections:
+                sub_url = extract_base_url(
+                    url=connection.server.host,
+                    port=self.config.xui.SUBSCRIPTION_PORT,
+                    path=self.config.xui.SUBSCRIPTION_PATH,
+                )
+                full_url = f"{sub_url}{vpn_id}"
+                try:
+                    async with session.get(
+                        full_url, timeout=_aiohttp.ClientTimeout(total=10)
+                    ) as resp:
+                        if resp.status == 200:
+                            raw = (await resp.text()).strip()
+                            try:
+                                decoded = base64.b64decode(raw + "==").decode("utf-8")
+                                configs = [c for c in decoded.strip().split("\n") if c.strip()]
+                                all_configs.extend(configs)
+                            except Exception:
+                                if raw:
+                                    all_configs.append(raw)
+                except Exception as exc:
+                    logger.error(f"[sub] Failed to fetch from {connection.server.name}: {exc}")
+
+        if not all_configs:
+            return None
+
+        combined = "\n".join(all_configs)
+        return base64.b64encode(combined.encode("utf-8"))
+
     async def create_client(
         self,
         user: User,

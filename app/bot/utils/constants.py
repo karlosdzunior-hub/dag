@@ -30,6 +30,7 @@ NOTIFICATION_PRE_MESSAGE_TEXT_KEY = "notification_pre_message_text"
 # region: Webhook paths
 TELEGRAM_WEBHOOK = "/webhook"  # Webhook path for Telegram bot updates
 CONNECTION_WEBHOOK = "/connection"  # Webhook path for receiving connection requests
+SUB_WEBHOOK = "/sub"  # Webhook path for aggregated multi-server subscription
 CRYPTOMUS_WEBHOOK = "/cryptomus"  # Webhook path for receiving Cryptomus payment notifications
 HELEKET_WEBHOOK = "/heleket"  # Webhook path for receiving Heleket payment notifications
 YOOKASSA_WEBHOOK = "/yookassa"  # Webhook path for receiving Yookassa payment notifications

@@ -11,6 +11,11 @@ Original project: https://github.com/snoups/3xui-shop
 - Workflow: `Start application`
 - Telegram webhook URL is auto-derived from `REPLIT_DEV_DOMAIN` if `BOT_DOMAIN` is not set (see `app/config.py`).
 
+## Key features
+
+- **Aggregated subscription** (`/sub/{vpn_id}`): single URL that combines configs from ALL servers. V2RayTun shows it as "DagVPN" with all servers listed underneath.
+- **Multi-server support**: `server_pool.py` assigns users to servers and `get_all_connections()` returns all active servers for subscription aggregation.
+
 ## Replit-specific changes
 
 - `app/__main__.py`: replaced `RedisStorage` with in-memory FSM (`MemoryStorage`) and a `fakeredis` instance for tasks that expect a Redis client. This removes the external Redis dependency from `docker-compose.yml`.
