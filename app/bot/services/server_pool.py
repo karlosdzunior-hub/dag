@@ -124,6 +124,9 @@ class ServerPoolService:
 
         logger.info(f"Sync complete. Currently active servers: {len(self._servers)}")
 
+    def get_all_connections(self) -> list[Connection]:
+        return list(self._servers.values())
+
     async def assign_server_to_user(self, user: User) -> None:
         if user.server_id and user.server_id in self._servers:
             logger.debug(
