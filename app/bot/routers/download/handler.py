@@ -115,7 +115,8 @@ async def subscription_handler(request: Request) -> Response:
     title = _base64.b64encode("DagVPN".encode()).decode()
     return Response(
         body=content,
-        content_type="text/plain; charset=utf-8",
+        content_type="text/plain",
+        charset="utf-8",
         headers={"profile-title": title},
     )
 
