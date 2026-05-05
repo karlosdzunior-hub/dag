@@ -125,10 +125,21 @@ class ServerPoolService:
         logger.info(f"Sync complete. Currently active servers: {len(self._servers)}")
 
     async def assign_server_to_user(self, user: User) -> None:
+        if user.server_id and user.server_id in self._servers:
+            logger.debug(
+                f"User {user.tg_id} already assigned to server {user.server_id}, skipping reassignment."
+            )
+            return
+
+        server = await self.get_available_server()
+        if not server:
+            logger.critical(f"No available server to assign to user {user.tg_id}.")
+            return
+
         async with self.session() as session:
-            server = await self.get_available_server()
             user.server_id = server.id
             await User.update(session=session, tg_id=user.tg_id, server_id=server.id)
+            logger.info(f"User {user.tg_id} assigned to server {server.name} ({server.host}).")
 
     async def get_available_server(self) -> Server | None:
         await self.sync_servers()
