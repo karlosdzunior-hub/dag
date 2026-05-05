@@ -70,6 +70,31 @@ msgstr "YooKassa"
 msgid "payment:gateway:yoomoney"
 msgstr "YooMoney"
 
+#: app/bot/routers/subscription/keyboard.py
+msgid "payment:gateway:balance_sufficient"
+msgstr "Balance (enough) |"
+
+#: app/bot/routers/subscription/keyboard.py
+msgid "payment:gateway:balance_insufficient"
+msgstr "Balance (not enough) |"
+
+#: app/bot/routers/subscription/payment_handler.py
+msgid "payment:button:balance_confirm"
+msgstr "✅ Pay with balance"
+
+#: app/bot/routers/subscription/payment_handler.py
+msgid "payment:message:balance_confirm"
+msgstr ""
+"💰 <b>Pay with referral balance</b>\n"
+"\n"
+"Cost: <b>{price} {currency}</b>\n"
+"Your balance: <b>{balance} {currency}</b>\n"
+"Remaining after payment: <b>{balance_after} {currency}</b>\n"
+
+#: app/bot/routers/subscription/payment_handler.py
+msgid "payment:popup:insufficient_balance"
+msgstr "❌ Insufficient funds. Your balance: {balance} {currency}"
+
 #: app/bot/routers/admin_tools/admin_tools_handler.py:23
 msgid "admin_tools:message:main"
 msgstr "🛠 <b>Admin tools:</b>"
@@ -878,6 +903,14 @@ msgstr ""
 "2️⃣ You also get <b>+{second_referrer_duration}</b> from users invited by"
 " your referrals!\n"
 
+#: app/bot/routers/referral/handler.py:74
+msgid "referral:message:user_summary_explain_referrer_days_single"
+msgstr ""
+"\n"
+"💸 <b>Referral system</b>\n"
+"👥 <b>For each successful payment</b> for a subscription using your link:\n"
+"You get <b>+{first_referrer_duration}</b> added to your subscription\n"
+
 #: app/bot/routers/referral/handler.py:83
 msgid "referral:message:user_summary_explain_referrer_money"
 msgstr ""
@@ -889,6 +922,15 @@ msgstr ""
 "2️⃣ You also get <b>{second_referrer_rate}%</b> of payments from users "
 "invited by your referrals!\n"
 
+#: app/bot/routers/referral/handler.py:83
+msgid "referral:message:user_summary_explain_referrer_money_single"
+msgstr ""
+"\n"
+"💸 <b>Referral system</b>\n"
+"👥 <b>For each successful payment</b> for a subscription using your link:\n"
+"You receive <b>{first_referrer_rate}%</b> of the payment to your balance\n"
+"💳 Balance can be used to pay for subscriptions\n"
+
 #: app/bot/routers/referral/handler.py:93
 msgid "referral:message:user_summary_referrer_rewards"
 msgstr ""
@@ -898,6 +940,20 @@ msgstr ""
 "Second level: {second_level_rewards_sum}\n"
 "<i>*(Rewards are credited within 15 minutes. Pending rewards: "
 "{pending_rewards_count})</i>"
+
+#: app/bot/routers/referral/handler.py:93
+msgid "referral:message:user_summary_referrer_rewards_single"
+msgstr ""
+"\n"
+"📊 <b>Total earned: {total_rewards_sum}</b>\n"
+"<i>*(Rewards are credited within 15 minutes. Pending: "
+"{pending_rewards_count})</i>"
+
+#: app/bot/routers/referral/handler.py:93
+msgid "referral:message:user_balance"
+msgstr ""
+"\n"
+"💰 <b>Your balance: {balance} {currency}</b>\n"
 
 #: app/bot/routers/referral/handler.py:142
 msgid "referral:popup:no_available_servers"
