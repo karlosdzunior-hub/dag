@@ -1,0 +1,56 @@
+root@nl-vmnano:/opt/3xui-shop# git stash && git pull origin main && git stash pop
+Saved working directory and index state WIP on main: 6b6d8f9 chore: set referral level 1 rate to 30%, remove level 2 entirely
+From https://github.com/karlosdzunior-hub/dag
+ * branch            main       -> FETCH_HEAD
+Updating 6b6d8f9..cc4fce7
+Fast-forward
+ .../payment_gateways/_gateway.py  |   9 +-
+ .../notification_handler.py       |   6 +-
+ .../routers/download/handler.py   |   4 +-
+ .../routers/download/keyboard.py  |  24 +-
+ .../routers/referral/handler.py   |  16 -
+ .../subscription/keyboard.py      |  21 +-
+ app/bot/services/server_pool.py   |   3 +
+ app/bot/services/vpn.py           | 171 +++++++++-
+ ...300b9435d6_add_user_balance.py |   2 +-
+ app/locales/en/LC_MESSAGES/bot.po |  13 +-
+ app/locales/ru/LC_MESSAGES/bot.po |  15 +-
+ ...AnL29wdC8zeH_1777907431810.txt |   8 +
+ ...ch-file-or-d_1777917873455.txt |  76 +++++
+ ...ui-shop-venv_1777904505513.txt |  64 ++++
+ ...ui-shop-venv_1777917095959.txt |  62 ++++
+ ...l-u-3xui-sho_1777902745107.txt |  52 +++
+ ...l-u-3xui-sho_1777902826840.txt |  52 +++
+ ...l-u-3xui-sho_1777902972872.txt |  52 +++
+ 18 files changed, 583 insertions(+), 67 deletions(-)
+ create mode 100644 attached_assets/Pasted--aW1wb3J0IHJlCgojIEZpeCBoYW5kbGVyLnB5CnAgPSAnL29wdC8zeH_1777907431810.txt
+ create mode 100644 attached_assets/Pasted-65-No-such-file-or-directory-cat-7259-No-such-file-or-d_1777917873455.txt
+ create mode 100644 attached_assets/Pasted-Traceback-most-recent-call-last-File-opt-3xui-shop-venv_1777904505513.txt
+ create mode 100644 attached_assets/Pasted-Traceback-most-recent-call-last-File-opt-3xui-shop-venv_1777917095959.txt
+ create mode 100644 attached_assets/Pasted-root-nl-vmnano-opt-3xui-shop-sudo-journalctl-u-3xui-sho_1777902745107.txt
+ create mode 100644 attached_assets/Pasted-root-nl-vmnano-opt-3xui-shop-sudo-journalctl-u-3xui-sho_1777902826840.txt
+ create mode 100644 attached_assets/Pasted-root-nl-vmnano-opt-3xui-shop-sudo-journalctl-u-3xui-sho_1777902972872.txt
+Auto-merging app/bot/routers/referral/handler.py
+Auto-merging app/bot/routers/subscription/keyboard.py
+CONFLICT (content): Merge conflict in app/bot/routers/subscription/keyboard.py
+Auto-merging app/locales/ru/LC_MESSAGES/bot.po
+CONFLICT (content): Merge conflict in app/locales/ru/LC_MESSAGES/bot.po
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   app/data/plans.json
+
+Unmerged paths:
+  (use "git restore --staged <file>..." to unstage)
+  (use "git add <file>..." to mark resolution)
+        both modified:   app/bot/routers/subscription/keyboard.py
+        both modified:   app/locales/ru/LC_MESSAGES/bot.po
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        udo journalctl -u 3xui-shop -n 50 --no-pager
+
+The stash entry is kept in case you need it again.
+root@nl-vmnano:/opt/3xui-shop# 
