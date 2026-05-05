@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bot.models import ClientData, ServicesContainer, SubscriptionData
 from app.bot.payment_gateways import GatewayFactory
+from app.bot.utils.constants import Currency
 from app.bot.utils.navigation import NavSubscription
 from app.config import Config
 from app.db.models import User
@@ -174,14 +175,18 @@ async def callback_duration_selected(
     callback_data: SubscriptionData,
     services: ServicesContainer,
     gateway_factory: GatewayFactory,
+    config: Config,
 ) -> None:
     logger.info(f"User {user.tg_id} selected duration: {callback_data.duration}")
     callback_data.state = NavSubscription.PAY
+    shop_currency = Currency.from_code(config.shop.CURRENCY) if float(user.balance) > 0 else None
     await callback.message.edit_text(
         text=_("subscription:message:payment_method"),
         reply_markup=payment_method_keyboard(
             plan=services.plan.get_plan(callback_data.devices),
             callback_data=callback_data,
             gateways=gateway_factory.get_gateways(),
+            user_balance=float(user.balance),
+            shop_currency=shop_currency,
         ),
     )
