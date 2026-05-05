@@ -136,6 +136,8 @@ def payment_method_keyboard(
     plan: Plan,
     callback_data: SubscriptionData,
     gateways: list[PaymentGateway],
+    user_balance: float = 0.0,
+    shop_currency: Currency | None = None,
 ) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for gateway in gateways:
@@ -151,6 +153,18 @@ def payment_method_keyboard(
             )
         )
 
+    if user_balance > 0 and shop_currency is not None:
+        balance_price = plan.get_price(currency=shop_currency, duration=callback_data.duration)
+        if balance_price is not None:
+            callback_data.state = NavSubscription.PAY_BALANCE
+            suffix = _("payment:gateway:balance_sufficient") if user_balance >= float(balance_price) else _("payment:gateway:balance_insufficient")
+            builder.row(
+                InlineKeyboardButton(
+                    text=f"💰 {suffix} {user_balance:.2f} {shop_currency.symbol}",
+                    callback_data=callback_data.pack(),
+                )
+            )
+
     callback_data.state = NavSubscription.DEVICES
     builder.row(
         back_button(
@@ -159,6 +173,26 @@ def payment_method_keyboard(
         )
     )
 
+    builder.row(back_to_main_menu_button())
+    return builder.as_markup()
+
+
+def balance_confirm_keyboard(callback_data: SubscriptionData) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    callback_data.state = NavSubscription.PAY_BALANCE_CONFIRM
+    builder.row(
+        InlineKeyboardButton(
+            text=_("payment:button:balance_confirm"),
+            callback_data=callback_data.pack(),
+        )
+    )
+    callback_data.state = NavSubscription.DURATION
+    builder.row(
+        back_button(
+            callback_data.pack(),
+            text=_("subscription:button:change_payment_method"),
+        )
+    )
     builder.row(back_to_main_menu_button())
     return builder.as_markup()
 
