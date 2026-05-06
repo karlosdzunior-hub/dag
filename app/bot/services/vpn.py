@@ -196,6 +196,27 @@ class VPNService:
         combined = "\n".join(all_configs)
         return base64.b64encode(combined.encode("utf-8"))
 
+    async def _push_client_to_connection(
+        self,
+        connection,
+        user: User,
+        new_client: Client,
+    ) -> None:
+        """Create or update a client on a single server connection."""
+        from .server_pool import Connection as _Connection
+        try:
+            inbound_id = await self.server_pool_service.get_inbound_id(connection.api)
+            existing = await connection.api.client.get_by_email(str(user.tg_id))
+            if existing:
+                new_client.id = existing.id
+                await connection.api.client.update(client_uuid=existing.id, client=new_client)
+                logger.info(f"[multi] Updated client {user.tg_id} on {connection.server.name}")
+            else:
+                await connection.api.client.add(inbound_id=inbound_id, clients=[new_client])
+                logger.info(f"[multi] Created client {user.tg_id} on {connection.server.name}")
+        except Exception as exc:
+            logger.error(f"[multi] Failed on {connection.server.name} for {user.tg_id}: {exc}")
+
     async def create_client(
         self,
         user: User,
@@ -209,9 +230,10 @@ class VPNService:
         logger.info(f"Creating new client {user.tg_id} | {devices} devices {duration} days.")
 
         await self.server_pool_service.assign_server_to_user(user)
-        connection = await self.server_pool_service.get_connection(user)
+        connections = self.server_pool_service.get_all_connections()
 
-        if not connection:
+        if not connections:
+            logger.critical(f"No servers available for client {user.tg_id}.")
             return False
 
         new_client = Client(
@@ -224,15 +246,18 @@ class VPNService:
             sub_id=user.vpn_id,
             total_gb=total_gb,
         )
-        inbound_id = await self.server_pool_service.get_inbound_id(connection.api)
 
-        try:
-            await connection.api.client.add(inbound_id=inbound_id, clients=[new_client])
-            logger.info(f"Successfully created client for {user.tg_id}")
-            return True
-        except Exception as exception:
-            logger.error(f"Error creating client for {user.tg_id}: {exception}")
-            return False
+        success = False
+        for conn in connections:
+            try:
+                inbound_id = await self.server_pool_service.get_inbound_id(conn.api)
+                await conn.api.client.add(inbound_id=inbound_id, clients=[new_client])
+                logger.info(f"Successfully created client {user.tg_id} on {conn.server.name}")
+                success = True
+            except Exception as exception:
+                logger.error(f"Error creating client {user.tg_id} on {conn.server.name}: {exception}")
+
+        return success
 
     async def update_client(
         self,
@@ -279,8 +304,16 @@ class VPNService:
             client.sub_id = user.vpn_id
             client.total_gb = total_gb
 
+            # Update on primary server
             await connection.api.client.update(client_uuid=client.id, client=client)
-            logger.info(f"Client {user.tg_id} updated successfully.")
+            logger.info(f"Client {user.tg_id} updated on primary server {connection.server.name}.")
+
+            # Sync to all other servers (create if missing)
+            for conn in self.server_pool_service.get_all_connections():
+                if conn.server.id == connection.server.id:
+                    continue
+                await self._push_client_to_connection(conn, user, client)
+
             return True
         except Exception as exception:
             logger.error(f"Error updating client {user.tg_id}: {exception}")
