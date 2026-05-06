@@ -44,15 +44,9 @@ def main_menu_keyboard(
         ),
     )
     builder.row(
-        *(
-            [
-                InlineKeyboardButton(
-                    text=_("main_menu:button:referral"),
-                    callback_data=NavReferral.MAIN,
-                )
-            ]
-            if is_referral_available
-            else []
+        InlineKeyboardButton(
+            text=_("main_menu:button:referral"),
+            callback_data=NavReferral.MAIN,
         ),
         InlineKeyboardButton(
             text=_("main_menu:button:support"),
