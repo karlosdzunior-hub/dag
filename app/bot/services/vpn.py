@@ -149,21 +149,25 @@ class VPNService:
                     path=self.config.xui.SUBSCRIPTION_PATH,
                 )
                 full_url = f"{sub_url}{vpn_id}"
+                logger.info(f"[sub] Fetching from {connection.server.name}: {full_url}")
                 try:
                     async with session.get(
                         full_url, timeout=_aiohttp.ClientTimeout(total=10)
                     ) as resp:
+                        logger.info(f"[sub] {connection.server.name} responded with status {resp.status}")
                         if resp.status == 200:
                             raw = (await resp.text()).strip()
                             try:
                                 decoded = base64.b64decode(raw + "==").decode("utf-8")
                                 configs = [c for c in decoded.strip().split("\n") if c.strip()]
                                 all_configs.extend(configs)
+                                logger.info(f"[sub] {connection.server.name}: got {len(configs)} configs")
                             except Exception:
                                 if raw:
                                     all_configs.append(raw)
                 except Exception as exc:
-                    logger.error(f"[sub] Failed to fetch from {connection.server.name}: {exc}")
+                    import traceback
+                    logger.error(f"[sub] Failed to fetch from {connection.server.name} (url={full_url}): {exc!r}\n{traceback.format_exc()}")
 
         if not all_configs:
             return None
