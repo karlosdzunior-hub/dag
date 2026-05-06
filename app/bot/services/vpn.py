@@ -132,6 +132,23 @@ class VPNService:
         logger.debug(f"Fetched key for {user.tg_id}: {key}.")
         return key
 
+    @staticmethod
+    def _tag_config(config_line: str, label: str) -> str:
+        import base64 as _b64
+        import json as _json
+        if config_line.startswith("vmess://"):
+            try:
+                raw = _b64.b64decode(config_line[8:] + "==").decode("utf-8")
+                obj = _json.loads(raw)
+                obj["ps"] = label
+                return "vmess://" + _b64.b64encode(_json.dumps(obj, ensure_ascii=False).encode()).decode()
+            except Exception:
+                pass
+        if "#" in config_line:
+            base, _ = config_line.rsplit("#", 1)
+            return f"{base}#{label}"
+        return f"{config_line}#{label}"
+
     async def get_combined_subscription(self, vpn_id: str) -> bytes | None:
         import base64
         import aiohttp as _aiohttp
@@ -143,6 +160,7 @@ class VPNService:
             connector=_aiohttp.TCPConnector(ssl=False)
         ) as session:
             for connection in connections:
+                label = connection.server.location or connection.server.name
                 sub_url = extract_base_url(
                     url=connection.server.host,
                     port=self.config.xui.SUBSCRIPTION_PORT,
@@ -159,7 +177,10 @@ class VPNService:
                             raw = (await resp.text()).strip()
                             try:
                                 decoded = base64.b64decode(raw + "==").decode("utf-8")
-                                configs = [c for c in decoded.strip().split("\n") if c.strip()]
+                                configs = [
+                                    self._tag_config(c, label)
+                                    for c in decoded.strip().split("\n") if c.strip()
+                                ]
                                 all_configs.extend(configs)
                                 logger.info(f"[sub] {connection.server.name}: got {len(configs)} configs")
                             except Exception:
