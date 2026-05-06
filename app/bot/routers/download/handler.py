@@ -117,7 +117,11 @@ async def subscription_handler(request: Request) -> Response:
         body=content,
         content_type="text/plain",
         charset="utf-8",
-        headers={"profile-title": title},
+        headers={
+            "profile-title": title,
+            "content-disposition": 'attachment; filename="DagVPN"',
+            "profile-update-interval": "12",
+        },
     )
 
 
