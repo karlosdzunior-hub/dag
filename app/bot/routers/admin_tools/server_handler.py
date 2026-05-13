@@ -248,6 +248,26 @@ async def callback_confirmation(
 # endregion
 
 
+@router.callback_query(F.data == NavAdminTools.SYNC_USERS_TO_SERVERS, IsDev())
+async def callback_sync_users_to_servers(
+    callback: CallbackQuery,
+    user: User,
+    services: ServicesContainer,
+) -> None:
+    logger.info(f"Dev {user.tg_id} started syncing all users to all servers.")
+    await services.notification.show_popup(
+        callback=callback,
+        text=_("server_management:popup:sync_users_started"),
+    )
+    synced, errors = await services.vpn.sync_all_users_to_all_servers()
+    await services.notification.show_popup(
+        callback=callback,
+        text=_("server_management:popup:sync_users_done").format(
+            synced=synced, errors=errors
+        ),
+    )
+
+
 # region Server
 @router.callback_query(F.data.startswith(NavAdminTools.SHOW_SERVER), IsDev())
 async def callback_show_server(

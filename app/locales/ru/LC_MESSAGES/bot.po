@@ -693,6 +693,15 @@ msgstr "✅ Сервер успешно удален."
 msgid "server_management:popup:delete_failed"
 msgstr "❌ Не удалось удалить сервер."
 
+msgid "server_management:button:sync_users"
+msgstr "🔄 Синхронизировать пользователей"
+
+msgid "server_management:popup:sync_users_started"
+msgstr "⏳ Синхронизация всех пользователей на все серверы… Подождите."
+
+msgid "server_management:popup:sync_users_done"
+msgstr "✅ Синхронизация завершена. Создано: {synced} | Ошибок: {errors}"
+
 #: app/bot/routers/admin_tools/statistics_handler.py:18
 #: app/bot/routers/admin_tools/user_handler.py:18
 msgid "global:popup:development"

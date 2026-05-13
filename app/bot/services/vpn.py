@@ -319,6 +319,68 @@ class VPNService:
             logger.error(f"Error updating client {user.tg_id}: {exception}")
             return False
 
+    async def sync_all_users_to_all_servers(self) -> tuple[int, int]:
+        """Push every user's client to every server where they're missing.
+
+        Returns (synced_count, error_count).
+        """
+        async with self.session() as session:
+            users = await User.get_all(session=session)
+
+        connections = self.server_pool_service.get_all_connections()
+        if not connections:
+            logger.warning("[sync_all] No connections available.")
+            return 0, 0
+
+        synced = 0
+        errors = 0
+
+        for user in users:
+            if not user.vpn_id:
+                continue
+
+            for conn in connections:
+                try:
+                    existing = await conn.api.client.get_by_email(str(user.tg_id))
+                    if existing:
+                        logger.debug(
+                            f"[sync_all] User {user.tg_id} already exists on {conn.server.name}, skipping."
+                        )
+                        continue
+
+                    inbound_id = await self.server_pool_service.get_inbound_id(conn.api)
+                    if inbound_id is None:
+                        logger.error(
+                            f"[sync_all] Could not get inbound_id for {conn.server.name}, skipping user {user.tg_id}."
+                        )
+                        errors += 1
+                        continue
+
+                    from py3xui import Client
+                    client = Client(
+                        email=str(user.tg_id),
+                        enable=True,
+                        id=user.vpn_id,
+                        expiry_time=0,
+                        flow="xtls-rprx-vision",
+                        limit_ip=1,
+                        sub_id=user.vpn_id,
+                        total_gb=0,
+                    )
+                    await conn.api.client.add(inbound_id=inbound_id, clients=[client])
+                    logger.info(
+                        f"[sync_all] Created user {user.tg_id} on {conn.server.name}."
+                    )
+                    synced += 1
+                except Exception as exc:
+                    logger.error(
+                        f"[sync_all] Failed to sync user {user.tg_id} to {conn.server.name}: {exc}"
+                    )
+                    errors += 1
+
+        logger.info(f"[sync_all] Done. Synced: {synced}, Errors: {errors}")
+        return synced, errors
+
     async def create_subscription(self, user: User, devices: int, duration: int) -> bool:
         if not await self.is_client_exists(user):
             return await self.create_client(user=user, devices=devices, duration=duration)

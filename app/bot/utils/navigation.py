@@ -73,6 +73,7 @@ class NavAdminTools(str, Enum):
     DELETE_SERVER = "delete_server"
     EDIT_SERVER = "edit_server"
     SYNC_SERVERS = "sync_servers"
+    SYNC_USERS_TO_SERVERS = "sync_users_to_servers"
     STATISTICS = "statistics"
     USER_EDITOR = "user_editor"
 

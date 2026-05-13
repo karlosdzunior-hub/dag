@@ -195,6 +195,12 @@ def server_keyboard(server_name: str) -> InlineKeyboardMarkup:
     )
     builder.row(
         InlineKeyboardButton(
+            text=_("server_management:button:sync_users"),
+            callback_data=NavAdminTools.SYNC_USERS_TO_SERVERS,
+        )
+    )
+    builder.row(
+        InlineKeyboardButton(
             text=_("server_management:button:delete"),
             callback_data=NavAdminTools.DELETE_SERVER + f"_{server_name}",
         )

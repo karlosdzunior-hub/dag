@@ -686,6 +686,15 @@ msgstr "✅ Server deleted successfully."
 msgid "server_management:popup:delete_failed"
 msgstr "❌ Failed to delete the server."
 
+msgid "server_management:button:sync_users"
+msgstr "🔄 Sync Users to All Servers"
+
+msgid "server_management:popup:sync_users_started"
+msgstr "⏳ Syncing all users to all servers… This may take a moment."
+
+msgid "server_management:popup:sync_users_done"
+msgstr "✅ Sync complete. Created: {synced} | Errors: {errors}"
+
 #: app/bot/routers/admin_tools/statistics_handler.py:18
 #: app/bot/routers/admin_tools/user_handler.py:18
 msgid "global:popup:development"
