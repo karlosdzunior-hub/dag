@@ -14,12 +14,13 @@ environs = "^11.2.1"
 cachetools = "^5.5.0"
 py3xui = "^0.3.2"
 yookassa = "^3.4.3"
-sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.49"}
 aiosqlite = "^0.20.0"
 alembic = "^1.14.0"
 redis = "^5.2.1"
 apscheduler = "^3.11.0"
 fakeredis = "^2.35.1"
+marshmallow = "^4.3.0"
 
 [build-system]
 requires = ["poetry-core"]
