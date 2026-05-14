@@ -340,7 +340,13 @@ class VPNService:
 
             for conn in connections:
                 try:
-                    existing = await conn.api.client.get_by_email(str(user.tg_id))
+                    try:
+                        existing = await conn.api.client.get_by_email(str(user.tg_id))
+                    except Exception as lookup_exc:
+                        if "not found" in str(lookup_exc).lower():
+                            existing = None
+                        else:
+                            raise
 
                     inbound_id = await self.server_pool_service.get_inbound_id(conn.api)
                     if inbound_id is None:
@@ -357,9 +363,9 @@ class VPNService:
                                 f"[sync_all] User {user.tg_id} already correct on {conn.server.name}, skipping."
                             )
                             continue
+                        original_id = existing.id
                         existing.sub_id = user.vpn_id
-                        existing.id = user.vpn_id
-                        await conn.api.client.update(existing.id, existing)
+                        await conn.api.client.update(original_id, existing)
                         logger.info(
                             f"[sync_all] Updated sub_id for user {user.tg_id} on {conn.server.name}."
                         )
