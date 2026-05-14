@@ -203,16 +203,17 @@ class VPNService:
         new_client: Client,
     ) -> None:
         """Create or update a client on a single server connection."""
-        from .server_pool import Connection as _Connection
+        import copy
         try:
             inbound_id = await self.server_pool_service.get_inbound_id(connection.api)
             existing = await connection.api.client.get_by_email(str(user.tg_id))
+            client_to_send = copy.copy(new_client)
             if existing:
-                new_client.id = existing.id
-                await connection.api.client.update(client_uuid=existing.id, client=new_client)
+                client_to_send.id = existing.id
+                await connection.api.client.update(client_uuid=existing.id, client=client_to_send)
                 logger.info(f"[multi] Updated client {user.tg_id} on {connection.server.name}")
             else:
-                await connection.api.client.add(inbound_id=inbound_id, clients=[new_client])
+                await connection.api.client.add(inbound_id=inbound_id, clients=[client_to_send])
                 logger.info(f"[multi] Created client {user.tg_id} on {connection.server.name}")
         except Exception as exc:
             logger.error(f"[multi] Failed on {connection.server.name} for {user.tg_id}: {exc}")
