@@ -341,11 +341,6 @@ class VPNService:
             for conn in connections:
                 try:
                     existing = await conn.api.client.get_by_email(str(user.tg_id))
-                    if existing:
-                        logger.debug(
-                            f"[sync_all] User {user.tg_id} already exists on {conn.server.name}, skipping."
-                        )
-                        continue
 
                     inbound_id = await self.server_pool_service.get_inbound_id(conn.api)
                     if inbound_id is None:
@@ -356,6 +351,21 @@ class VPNService:
                         continue
 
                     from py3xui import Client
+                    if existing:
+                        if existing.sub_id == user.vpn_id:
+                            logger.debug(
+                                f"[sync_all] User {user.tg_id} already correct on {conn.server.name}, skipping."
+                            )
+                            continue
+                        existing.sub_id = user.vpn_id
+                        existing.id = user.vpn_id
+                        await conn.api.client.update(existing.id, existing)
+                        logger.info(
+                            f"[sync_all] Updated sub_id for user {user.tg_id} on {conn.server.name}."
+                        )
+                        synced += 1
+                        continue
+
                     client = Client(
                         email=str(user.tg_id),
                         enable=True,
