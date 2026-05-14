@@ -65,6 +65,9 @@ class ServerPoolService:
         except Exception as exception:
             logger.error(f"Failed to fetch inbounds: {exception}")
             return None
+        if not inbounds:
+            logger.error("No inbounds found on server.")
+            return None
         return inbounds[0].id
 
     async def get_connection(self, user: User) -> Connection | None:
@@ -86,8 +89,15 @@ class ServerPoolService:
                 server = await Server.get_by_id(session=session, id=user.server_id)
 
             if server:
-                logger.debug(f"Server {server.name} ({server.host}) found in database.")
-                # TODO: Try to add server to pool
+                logger.warning(
+                    f"Server {server.name} ({server.host}) found in DB but not in pool — attempting reconnect."
+                )
+                await self._add_server(server)
+                connection = self._servers.get(user.server_id)
+                if connection:
+                    logger.info(f"Reconnected to server {server.name} successfully.")
+                    return connection
+                logger.error(f"Failed to reconnect to server {server.name}.")
             else:
                 logger.error(f"Server {user.server_id} not found in database.")
 

@@ -250,9 +250,7 @@ class VPNService:
         success = False
         for conn in connections:
             try:
-                inbound_id = await self.server_pool_service.get_inbound_id(conn.api)
-                await conn.api.client.add(inbound_id=inbound_id, clients=[new_client])
-                logger.info(f"Successfully created client {user.tg_id} on {conn.server.name}")
+                await self._push_client_to_connection(conn, user, new_client)
                 success = True
             except Exception as exception:
                 logger.error(f"Error creating client {user.tg_id} on {conn.server.name}: {exception}")
